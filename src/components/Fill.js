@@ -1,6 +1,6 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 import ReactLoading from 'react-loading';
 
 import { withStyles } from '@material-ui/core/styles';
@@ -12,30 +12,30 @@ import Fab from '@material-ui/core/Fab';
 
 const styles = theme => ({
   root: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   message: {
     padding: `${theme.spacing.unit * 2}px`,
-    margin:  `0 ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px`,
-    backgroundColor: "#2196f3",
+    margin: `0 ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px`,
+    backgroundColor: '#2196f3',
     color: theme.palette.primary.contrastText,
   },
   widthStyle: {
-    margin:  `0 ${theme.spacing.unit * 3}px`,
+    margin: `0 ${theme.spacing.unit * 3}px`,
   },
   paperFill: {
     color: theme.palette.primary.contrastText,
   },
   links: {
-    textDecoration:"none",
-    color: "unset"
+    textDecoration: 'none',
+    color: 'unset',
   },
-  btn:{
+  btn: {
     color: theme.palette.primary.contrastText,
   },
   form: {
     padding: `${theme.spacing.unit * 2}px`,
-    margin:  `0 ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px`,
+    margin: `0 ${theme.spacing.unit * 3}px ${theme.spacing.unit * 3}px`,
   },
   marginIcon: {
     marginRight: theme.spacing.unit,
@@ -43,19 +43,19 @@ const styles = theme => ({
   btnSend: {
     margin: `${theme.spacing.unit * 2}px`,
   },
-  itemBtn:{
-    textAlign: "center",
+  itemBtn: {
+    textAlign: 'center',
   },
   loading: {
     padding: `${theme.spacing.unit * 3}px`,
   },
   marginAuto: {
-    margin:"auto",
+    margin: 'auto',
     padding: `${theme.spacing.unit * 2}px`,
   },
   text: {
-    textAlign:"center"
-  }
+    textAlign: 'center',
+  },
 });
 
 let keywords = [];
@@ -73,8 +73,8 @@ class Fill extends Component {
       moustachesArray: [],
       newName: '',
       presentationIdCopy: '',
-      tripleMoustachesArray: []
-    }
+      tripleMoustachesArray: [],
+    };
 
     this.loadSlidesApi = this.loadSlidesApi.bind(this);
     this.listSlides = this.listSlides.bind(this);
@@ -88,12 +88,12 @@ class Fill extends Component {
     this.getId();
   }
 
-  getId(){
-    const {presentationId, uploadedFileId} =this.props;
-    if (presentationId !== ''){
-      fileId = presentationId
-    } else if(uploadedFileId !== '') {
-      fileId = uploadedFileId
+  getId() {
+    const { presentationId, uploadedFileId } = this.props;
+    if (presentationId !== '') {
+      fileId = presentationId;
+    } else if (uploadedFileId !== '') {
+      fileId = uploadedFileId;
     } else {
       console.log('file not found');
     }
@@ -101,89 +101,107 @@ class Fill extends Component {
   }
 
   loadSlidesApi() {
-      presentation = fileId;
-      window.gapi.client.load('slides', 'v1').then(this.listSlides);
+    presentation = fileId;
+    window.gapi.client.load('slides', 'v1').then(this.listSlides);
   }
 
   listSlides() {
-    const {handleInitInputs, handleImagesInputs} = this.props;
-    window.gapi.client.slides.presentations.get({
-      presentationId: fileId
-    }).then(response => {
-      let presentation = response.result;
-      let moustaches = JSON.stringify(presentation).match(/(?<!{){{\s*[\w]+\s*}}(?!})/g);
-      let tripleMoustaches = JSON.stringify(presentation).match(/(?<!{){{{\s*[\w.]+\s*}}}(?!})/g);
-      if (moustaches.length > 0) {
-        eraseMoustache = moustaches.map(item => item.replace('{{', '').replace('}}', ''));
-        let moustachesNoDup = [...new Set([...keywords, ...eraseMoustache])];
-        this.setState({ moustachesArray: moustachesNoDup });
-      }
-      handleInitInputs(this.state.moustachesArray);
-      if (tripleMoustaches.length > 0) {
-        eraseTripleMoustache = tripleMoustaches.map(item => item.replace('{{{', '').replace('}}}', ''));
-        let tripleMoustachesNoDup = [...new Set([...keywords, ...eraseTripleMoustache])];
-        this.setState({ tripleMoustachesArray: tripleMoustachesNoDup });
-      }
-      handleImagesInputs(this.state.tripleMoustachesArray);
-    });
+    const { handleInitInputs, handleImagesInputs } = this.props;
+    window.gapi.client.slides.presentations
+      .get({
+        presentationId: fileId,
+      })
+      .then(response => {
+        let presentation = response.result;
+        let moustaches = JSON.stringify(presentation).match(/(?<!{){{\s*[\w]+\s*}}(?!})/g);
+        let tripleMoustaches = JSON.stringify(presentation).match(/(?<!{){{{\s*[\w.]+\s*}}}(?!})/g);
+        if (moustaches && moustaches.length > 0) {
+          eraseMoustache = moustaches.map(item => item.replace('{{', '').replace('}}', ''));
+          let moustachesNoDup = [...new Set([...keywords, ...eraseMoustache])];
+          this.setState({ moustachesArray: moustachesNoDup });
+        }
+        handleInitInputs(this.state.moustachesArray);
+        if (tripleMoustaches && tripleMoustaches.length > 0) {
+          eraseTripleMoustache = tripleMoustaches.map(item =>
+            item.replace('{{{', '').replace('}}}', '')
+          );
+          let tripleMoustachesNoDup = [...new Set([...keywords, ...eraseTripleMoustache])];
+          this.setState({ tripleMoustachesArray: tripleMoustachesNoDup });
+        }
+        handleImagesInputs(this.state.tripleMoustachesArray);
+      });
   }
 
   loadSlidesReplace() {
-    const {presentationId, uploadedFileId, handleNext} =this.props;
+    const { presentationId, uploadedFileId, handleNext } = this.props;
     if (presentationId || uploadedFileId !== '') {
-      window.gapi.client.load('slides', 'v1').then(f => {
-        window.gapi.client.load('drive', 'v2').then(execute => {
-          this.execute()
+      window.gapi.client
+        .load('slides', 'v1')
+        .then(f => {
+          window.gapi.client.load('drive', 'v2').then(execute => {
+            this.execute();
+          });
+          handleNext();
         })
-        handleNext();
-      }).catch(error => { console.log(error) });
+        .catch(error => {
+          console.log(error);
+        });
     }
   }
 
   execute() {
-    const {handleCopyId} = this.props;
-    return window.gapi.client.drive.files.copy({
-      "title": this.state.newName,
-      "fileId": presentation,
-      "resource": {}
-    })
-      .then((response) => {
-        let newId = response.result.id;
-        handleCopyId(newId);
-      },
-        function (err) { console.error("Execute error", err); })
-      .catch(err => { console.log(err); })
+    const { handleCopyId } = this.props;
+    return window.gapi.client.drive.files
+      .copy({
+        title: this.state.newName,
+        fileId: presentation,
+        resource: {},
+      })
+      .then(
+        response => {
+          let newId = response.result.id;
+          handleCopyId(newId);
+        },
+        function(err) {
+          console.error('Execute error', err);
+        }
+      )
+      .catch(err => {
+        console.log(err);
+      });
   }
 
   paintForm() {
     const { handleInputs, handleChangeFile, fileInput, classes, handleBack } = this.props;
-      return (
-        <form>
-          <Paper className={classes.form} elevation={1}>
-            <Typography variant="h5" component="h2">Fill the form</Typography>
-            <Grid container justify="center" alignItems="flex-start">
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  id="copyName"
-                  label="New document name"
-                  style={{ margin: 8 }}
-                  placeholder="New document name"
-                  fullWidth
-                  margin="normal"
-                  onChange={this.handleNewDocument}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                />
-              </Grid>
-              <Grid item xs={12}>
+    return (
+      <form>
+        <Paper className={classes.form} elevation={1}>
+          <Typography variant="h5" component="h2">
+            Fill the form
+          </Typography>
+          <Grid container justify="center" alignItems="flex-start">
+            <Grid item xs={12}>
+              <TextField
+                required
+                id="copyName"
+                label="New document name"
+                style={{ margin: 8 }}
+                placeholder="New document name"
+                fullWidth
+                margin="normal"
+                onChange={this.handleNewDocument}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
               {this.state.moustachesArray.map(item => {
                 return (
                   <TextField
                     required
                     key={item}
-                    id= {item}
+                    id={item}
                     label={item.toUpperCase()}
                     style={{ margin: 8 }}
                     placeholder={item}
@@ -195,11 +213,10 @@ class Fill extends Component {
                     }}
                   />
                 );
-              })
-              }
-              </Grid>
-              <Grid item xs={12}>
-              {this.state.tripleMoustachesArray.map(item=>{
+              })}
+            </Grid>
+            <Grid item xs={12}>
+              {this.state.tripleMoustachesArray.map(item => {
                 return (
                   <TextField
                     required
@@ -207,86 +224,94 @@ class Fill extends Component {
                     key={item}
                     name={item}
                     label={item.toUpperCase()}
-                    type='file'
+                    type="file"
                     onChange={handleChangeFile}
                     fullWidth
-                    margin='normal'
+                    margin="normal"
                     ref={fileInput}
                     InputLabelProps={{
                       shrink: true,
                     }}
                   />
                 );
-              })
-              }
-              </Grid>
-              <Grid item xs={6} className={classes.itemBtn}>
-                <Link to="/steps/choose" className={classes.links}>
-                    <Fab
-                      variant="extended"
-                      size="large"
-                      color="secondary"
-                      className={classes.btnSend}
-                      onClick={handleBack}>
-                      <span>Choose another template</span>
-                    </Fab>
-                  </Link>
-              </Grid>
-              <Grid item xs={6} className={classes.itemBtn}>
-                <Link to="/steps/success" className={classes.links}>
-                  <Fab
-                    variant="extended"
-                    size="large"
-                    color="primary"
-                    className={classes.btnSend}
-                    onClick={this.loadSlidesReplace}>
-                    <i className={`fas fa-share-square ${classes.marginIcon}`}></i>
-                    <span>Send Form</span>
-                  </Fab>
-                </Link>
-              </Grid>
+              })}
             </Grid>
-          </Paper>
-        </form>
-      )
+            <Grid item xs={6} className={classes.itemBtn}>
+              <Link to="/steps/choose" className={classes.links}>
+                <Fab
+                  variant="extended"
+                  size="large"
+                  color="secondary"
+                  className={classes.btnSend}
+                  onClick={handleBack}
+                >
+                  <span>Choose another template</span>
+                </Fab>
+              </Link>
+            </Grid>
+            <Grid item xs={6} className={classes.itemBtn}>
+              <Link to="/steps/success" className={classes.links}>
+                <Fab
+                  variant="extended"
+                  size="large"
+                  color="primary"
+                  className={classes.btnSend}
+                  onClick={this.loadSlidesReplace}
+                >
+                  <i className={`fas fa-share-square ${classes.marginIcon}`} />
+                  <span>Send Form</span>
+                </Fab>
+              </Link>
+            </Grid>
+          </Grid>
+        </Paper>
+      </form>
+    );
   }
 
-  handleNewDocument(e){
+  handleNewDocument(e) {
     let query = e.currentTarget.value;
     this.setState({
-      newName: query
-    })
+      newName: query,
+    });
   }
 
   render() {
     const { selectedTemplate, classes } = this.props;
-    if (this.state.moustachesArray.length>0 || this.state.tripleMoustachesArray.length>0 ) {
+    if (this.state.moustachesArray.length > 0 || this.state.tripleMoustachesArray.length > 0) {
       return (
         <div>
           <Paper className={classes.message} elevation={1}>
             <Grid container justify="center" alignItems="center" spacing={16}>
               <Grid item>
-                <i className="far fa-check-circle fa-3x"></i>
+                <i className="far fa-check-circle fa-3x" />
               </Grid>
               <Grid item>
-              <Typography component="p" className={classes.paperFill}>
-                {selectedTemplate}
-              </Typography>
+                <Typography component="p" className={classes.paperFill}>
+                  {selectedTemplate}
+                </Typography>
               </Grid>
             </Grid>
           </Paper>
           {this.paintForm()}
         </div>
-          );
+      );
     } else {
       return (
         <div className={classes.loading}>
-          <ReactLoading type={'spinningBubbles'} color={'#990099'} height={100} width={100} className={classes.marginAuto}/>
+          <ReactLoading
+            type={'spinningBubbles'}
+            color={'#990099'}
+            height={100}
+            width={100}
+            className={classes.marginAuto}
+          />
           <div className={classes.text}>
-            If the page does not refresh automatically in a minute, please check if your template has any keywords. Please review our 'How to use' section if necessary.
+            If the page does not refresh automatically in a minute, please check if your template
+            has any keywords. Please review our 'How to use' section if necessary.
           </div>
         </div>
-        )
+      );
     }
   }
 }
@@ -299,7 +324,7 @@ Fill.propTypes = {
   handleInputs: PropTypes.func,
   handleChangeFile: PropTypes.func,
   handleBack: PropTypes.func,
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
 };
 
 export default withStyles(styles)(Fill);
