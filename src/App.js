@@ -3,9 +3,9 @@ import { Route, Switch } from 'react-router-dom';
 import Home from './components/Home';
 import Steps from './components/Steps';
 import AboutUs from './components/AboutUs';
+import Legal from './components/Legal';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-
 
 const themeApp = createMuiTheme({
   palette: {
@@ -23,12 +23,9 @@ const themeApp = createMuiTheme({
     },
   },
   typography: {
-    fontFamily: [
-      'Roboto',
-      'sans-serif'
-    ].join(','),
-    fontSize: 16
-  }
+    fontFamily: ['Roboto', 'sans-serif'].join(','),
+    fontSize: 16,
+  },
 });
 
 class App extends Component {
@@ -38,8 +35,9 @@ class App extends Component {
     this.state = {
       activeStep: 0,
       clientId: '754675357649-76ar45tndb0lcbqr59v1hqlm4aea3lrs.apps.googleusercontent.com',
-      discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/slides/v1/rest"],
-      scopes: "https://www.googleapis.com/auth/presentations https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.photos.readonly",
+      discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/slides/v1/rest'],
+      scopes:
+        'https://www.googleapis.com/auth/presentations https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.photos.readonly',
       inputs: [],
       imagesInputs: [],
       images: [],
@@ -50,8 +48,8 @@ class App extends Component {
       presentationId: '',
       copyId: '',
       open: false,
-      uploadedFileId: ''
-    }
+      uploadedFileId: '',
+    };
 
     this.fileInput = React.createRef();
     this.templateInput = React.createRef();
@@ -91,34 +89,34 @@ class App extends Component {
   handleBack = () => {
     this.setState(state => ({
       activeStep: state.activeStep - 1,
-      uploadedFileId: ''
+      uploadedFileId: '',
     }));
-  }
+  };
 
-  resetStatus(){
+  resetStatus() {
     this.setState({
-      uploadedFileId: ''
-    })
+      uploadedFileId: '',
+    });
   }
 
-  handleOpen(){
+  handleOpen() {
     this.setState({ open: true });
-  };
+  }
 
-  handleClose(){
+  handleClose() {
     this.setState({ open: false });
-  };
+  }
 
   handleInitInputs(data) {
     let newArray = [];
     if (data !== undefined) {
       data.map(item => {
         newArray.push([item, '']);
-        return newArray
+        return newArray;
       });
 
       this.setState({
-        inputs: newArray
+        inputs: newArray,
       });
     }
   }
@@ -128,11 +126,11 @@ class App extends Component {
     if (data !== undefined) {
       data.map(item => {
         newArray.push([item, '']);
-        return newArray
+        return newArray;
       });
 
       this.setState({
-        imagesInputs: newArray
+        imagesInputs: newArray,
       });
     }
   }
@@ -145,13 +143,13 @@ class App extends Component {
     let newValue = [];
     newValue = inputs.map(item => {
       if (item[0] === target) {
-        item[1] = value
+        item[1] = value;
       }
       return item;
     });
 
     this.setState({
-      inputs: newValue
+      inputs: newValue,
     });
   }
 
@@ -159,23 +157,25 @@ class App extends Component {
     let imagesIdArray = [];
     imagesIdArray = this.state.imagesInputs.map(item => {
       if (item[0] === uploadId) {
-        item[1] = idImage
+        item[1] = idImage;
       }
       return item;
     });
     this.setState({
       imagesInputs: imagesIdArray,
     });
-
   }
 
   handleChangeTemplate(event) {
     const myFile = event.currentTarget.files[0];
     const url = [];
     url.push(myFile);
-    this.setState({
-      template: url,
-    }, () => this.uploadTemplateDrive());
+    this.setState(
+      {
+        template: url,
+      },
+      () => this.uploadTemplateDrive()
+    );
   }
 
   handleClick() {
@@ -185,26 +185,32 @@ class App extends Component {
   uploadTemplateDrive() {
     let file = this.state.template[0];
     let metadata = {
-      'name': file.name,
-      'mimeType': 'application/vnd.google-apps.presentation',
+      name: file.name,
+      mimeType: 'application/vnd.google-apps.presentation',
     };
     let accessToken = window.gapi.auth.getToken().access_token;
     let form = new FormData();
     form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
     form.append('file', file);
     var xhr = new XMLHttpRequest();
-    xhr.open('post', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id');
+    xhr.open(
+      'post',
+      'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id'
+    );
     xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
     xhr.responseType = 'json';
     xhr.onload = () => {
-      let fileId = xhr.response.id
-      this.setState({
-        uploadedFileId: fileId
-      }, ()=>{
-        let message = 'You picked: ' + file.name;
-        this.handleTemplate(message);
-        this.handleNext();
-      } )
+      let fileId = xhr.response.id;
+      this.setState(
+        {
+          uploadedFileId: fileId,
+        },
+        () => {
+          let message = 'You picked: ' + file.name;
+          this.handleTemplate(message);
+          this.handleNext();
+        }
+      );
     };
     xhr.send(form);
   }
@@ -214,41 +220,48 @@ class App extends Component {
     const uploadId = event.currentTarget.id;
     const url = [];
     url.push(myFile);
-    this.setState({
-      images: url,
-    }, () => window.gapi.client.load('drive', 'v2').then(this.uploadImageDrive(uploadId)));
+    this.setState(
+      {
+        images: url,
+      },
+      () => window.gapi.client.load('drive', 'v2').then(this.uploadImageDrive(uploadId))
+    );
   }
 
   uploadImageDrive(uploadId) {
     let file = this.state.images[0];
     let metadata = {
-      'name': file.name,
-      'mimeType': file.type,
+      name: file.name,
+      mimeType: file.type,
     };
     let accessToken = window.gapi.auth.getToken().access_token;
     let form = new FormData();
     form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
     form.append('file', file);
     const xhr = new XMLHttpRequest();
-    xhr.open('post', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id');
+    xhr.open(
+      'post',
+      'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id'
+    );
     xhr.setRequestHeader('Authorization', 'Bearer ' + accessToken);
     xhr.responseType = 'json';
     xhr.send(form);
     xhr.onload = () => {
       const body = {
-        'value': "default",
-        'type': "anyone",
-        'role': "reader"
+        value: 'default',
+        type: 'anyone',
+        role: 'reader',
       };
-      const request = window.gapi.client.drive.permissions.insert({
-        'fileId': xhr.response.id,
-        'resource': body
-      })
+      const request = window.gapi.client.drive.permissions
+        .insert({
+          fileId: xhr.response.id,
+          resource: body,
+        })
         .then(() => {
           let idImage = xhr.response.id;
           this.handleTripleMoustaches(idImage, uploadId);
           return request;
-        })
+        });
     };
   }
 
@@ -256,13 +269,13 @@ class App extends Component {
     if (isSignedIn) {
       this.setState({
         signIn: true,
-        loadingHome: true
-      })
+        loadingHome: true,
+      });
     } else {
       this.setState({
         signIn: false,
-        loadingHome: false
-      })
+        loadingHome: false,
+      });
     }
   }
 
@@ -271,27 +284,29 @@ class App extends Component {
     this.setState({
       signIn: false,
       loadingHome: false,
-    })
+    });
   }
 
   handleTemplate(msg, id) {
     this.setState({
-      selectedTemplate: msg
+      selectedTemplate: msg,
     });
   }
 
   handlePresentationId(id) {
     this.setState({
-      presentationId: id
+      presentationId: id,
     });
   }
 
   handleCopyId(id) {
-    this.setState({
-      copyId: id
-    }, () => {
-      this.listSlidesReplace();
-    }
+    this.setState(
+      {
+        copyId: id,
+      },
+      () => {
+        this.listSlidesReplace();
+      }
     );
   }
 
@@ -301,44 +316,67 @@ class App extends Component {
       requests.push({
         replaceAllText: {
           containsText: {
-            text: `{{${item[0]}}}`
+            text: `{{${item[0]}}}`,
           },
-          replaceText: item[1]
-        }
+          replaceText: item[1],
+        },
       });
       return requests;
     });
     this.state.imagesInputs.map(item => {
       requests.push({
         replaceAllShapesWithImage: {
-          imageUrl: item[1] === '' ? 'https://drive.google.com/uc?export=view&id=1IbFzcNbWSBs_o1L_fSp3nUWd8JKRbKnj' : `https://drive.google.com/uc?export=view&id=${item[1]}`,
+          imageUrl:
+            item[1] === ''
+              ? 'https://drive.google.com/uc?export=view&id=1IbFzcNbWSBs_o1L_fSp3nUWd8JKRbKnj'
+              : `https://drive.google.com/uc?export=view&id=${item[1]}`,
           imageReplaceMethod: 'CENTER_INSIDE',
           containsText: {
             text: `{{{${item[0]}}}}`,
-            matchCase: false
-          }
-        }
+            matchCase: false,
+          },
+        },
       });
       return requests;
     });
 
-    window.gapi.client.slides.presentations.batchUpdate({
-      presentationId: this.state.copyId,
-      requests: requests
-    }).then((response) => {
-      console.log(response);
-    });
+    window.gapi.client.slides.presentations
+      .batchUpdate({
+        presentationId: this.state.copyId,
+        requests: requests,
+      })
+      .then(response => {
+        console.log(response);
+      });
   }
 
   render() {
-    const { discoveryDocs, clientId, scopes, signIn, inputs, selectedTemplate, loadingHome, presentationId, copyId, open, imagesInputs, activeStep, uploadedFileId } = this.state;
+    const {
+      discoveryDocs,
+      clientId,
+      scopes,
+      signIn,
+      inputs,
+      selectedTemplate,
+      loadingHome,
+      presentationId,
+      copyId,
+      open,
+      imagesInputs,
+      activeStep,
+      uploadedFileId,
+    } = this.state;
     return (
       <React.Fragment>
         <CssBaseline />
         <MuiThemeProvider theme={themeApp}>
-            <Switch>
-              <Route exact path="/" render={props =>
-                <Home clientId={clientId}
+          <Switch>
+            <Route
+              exact
+              path="/"
+              render={props => (
+                <Home
+                  clientId={clientId}
                   discoveryDocs={discoveryDocs}
                   scopes={scopes}
                   updateStateLogin={this.updateStateLogin}
@@ -347,9 +385,14 @@ class App extends Component {
                   handleOpen={this.handleOpen}
                   handleClose={this.handleClose}
                   open={open}
-                  />} />
-              <Route path="/steps" render={props =>
-                <Steps handleSignoutClick={this.handleSignoutClick}
+                />
+              )}
+            />
+            <Route
+              path="/steps"
+              render={props => (
+                <Steps
+                  handleSignoutClick={this.handleSignoutClick}
                   signIn={signIn}
                   clientId={clientId}
                   scopes={scopes}
@@ -362,7 +405,7 @@ class App extends Component {
                   handleInitInputs={this.handleInitInputs}
                   handleImagesInputs={this.handleImagesInputs}
                   handleChangeFile={this.handleChangeFile}
-                  presentationId= {presentationId}
+                  presentationId={presentationId}
                   handlePresentationId={this.handlePresentationId}
                   photos={this.state.images.photos}
                   fakeClick={this.fakeClick}
@@ -381,12 +424,22 @@ class App extends Component {
                   handleChangeTemplate={this.handleChangeTemplate}
                   uploadedFileId={uploadedFileId}
                   resetStatus={this.resetStatus}
-                  />} />
-              <Route path="/about" render={props =>
-                <AboutUs handleOpen={this.handleOpen}
-                handleClose={this.handleClose}
-                open={open}/>} />
-            </Switch>
+                />
+              )}
+            />
+            <Route
+              path="/about"
+              render={props => (
+                <AboutUs handleOpen={this.handleOpen} handleClose={this.handleClose} open={open} />
+              )}
+            />
+            <Route
+              path="/legal"
+              render={props => (
+                <Legal handleOpen={this.handleOpen} handleClose={this.handleClose} open={open} />
+              )}
+            />
+          </Switch>
         </MuiThemeProvider>
       </React.Fragment>
     );

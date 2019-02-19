@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
@@ -11,22 +11,26 @@ const styles = theme => ({
     padding: `${theme.spacing.unit * 3}px`,
   },
   item: {
-    textAlign: "center",
+    textAlign: 'center',
   },
   links: {
-    textDecoration:"none",
+    textDecoration: 'none',
   },
 });
 
 class Footer extends Component {
   render() {
-    const {classes} = this.props;
+    const { classes } = this.props;
     return (
       <footer>
         <Grid container className={classes.root}>
           <Grid item xs={12} className={classes.item}>
             <Typography component="p">
-              Developed in Adalab by <Link className={classes.links} to="/about">Gext Team</Link> in colaboration with Triporate © | 2019
+              Developed in Adalab by{' '}
+              <Link className={classes.links} to="/about">
+                Gext Team
+              </Link>{' '}
+              in colaboration with <a href="https://triporate.com">Triporate</a> © | 2019
             </Typography>
           </Grid>
         </Grid>
